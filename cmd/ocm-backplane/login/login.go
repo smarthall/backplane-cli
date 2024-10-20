@@ -261,10 +261,10 @@ func runLogin(cmd *cobra.Command, argv []string) (err error) {
 
 	logger.Debugln("Extracting backplane URL")
 	// Get Backplane URL
-	bpURL := globalOpts.BackplaneURL
-	if bpURL == "" {
-		bpURL = bpConfig.URL
+	if globalOpts.BackplaneURL != "" {
+		bpConfig.URL = globalOpts.BackplaneURL
 	}
+	bpURL := bpConfig.URL
 
 	if bpURL == "" {
 		return errors.New("empty backplane url - check your backplane-cli configuration")
