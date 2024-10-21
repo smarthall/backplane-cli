@@ -24,6 +24,7 @@ import (
 	"github.com/openshift/backplane-cli/pkg/backplaneapi"
 	"github.com/openshift/backplane-cli/pkg/cli/config"
 	"github.com/openshift/backplane-cli/pkg/cli/globalflags"
+	"github.com/openshift/backplane-cli/pkg/deprecation"
 	"github.com/openshift/backplane-cli/pkg/jira"
 	"github.com/openshift/backplane-cli/pkg/login"
 	"github.com/openshift/backplane-cli/pkg/ocm"
@@ -298,7 +299,9 @@ func runLogin(cmd *cobra.Command, argv []string) (err error) {
 	}).Debugln("Query backplane-api for proxy url of our target cluster")
 	// Query backplane-api for proxy url
 	bpAPIClusterURL, err := doLogin(bpURL, clusterID, *accessToken)
-	if err != nil {
+	if errors.Is(err, deprecation.ErrDeprecation) {
+		logger.Warnf("The server indicated that this version of backplane-cli is deprecated, please update as soon as possible.")
+	} else if err != nil {
 		// If login failed, we try to find out if the cluster is hibernating
 		isHibernating, _ := ocm.DefaultOCMInterface.IsClusterHibernating(clusterID)
 		if isHibernating {
@@ -517,6 +520,11 @@ func doLogin(api, clusterID, accessToken string) (string, error) {
 			return "", fmt.Errorf("unable to connect to backplane api")
 		}
 
+		return "", err
+	}
+
+	err = deprecation.CheckResponseDeprecation(resp)
+	if err != nil {
 		return "", err
 	}
 
