@@ -37,6 +37,7 @@ func (s *DefaultClientUtilsImpl) MakeRawBackplaneAPIClientWithAccessToken(base, 
 		client.RequestEditors = append(client.RequestEditors, func(ctx context.Context, req *http.Request) error {
 			req.Header.Add("Authorization", "Bearer "+accessToken)
 			req.Header.Set("User-Agent", "backplane-cli"+info.Version)
+			req.Header.Set("Backplane-Version", info.DefaultInfoService.GetVersion())
 			return nil
 		})
 		return nil
@@ -74,6 +75,7 @@ func makeRawBackplaneAPIClientWithAccessTokenCustomProxy(server string, accessTo
 		client.RequestEditors = append(client.RequestEditors, func(ctx context.Context, req *http.Request) error {
 			req.Header.Add("Authorization", "Bearer "+accessToken)
 			req.Header.Set("User-Agent", "backplane-cli"+info.Version)
+			req.Header.Set("Backplane-Version", info.Version)
 			return nil
 		})
 		return nil
@@ -104,6 +106,7 @@ func (*DefaultClientUtilsImpl) MakeBackplaneAPIClientWithAccessToken(base, acces
 		client.RequestEditors = append(client.RequestEditors, func(ctx context.Context, req *http.Request) error {
 			req.Header.Add("Authorization", "Bearer "+accessToken)
 			req.Header.Set("User-Agent", "backplane-cli"+info.Version)
+			req.Header.Set("Backplane-Version", info.Version)
 			return nil
 		})
 		return nil
